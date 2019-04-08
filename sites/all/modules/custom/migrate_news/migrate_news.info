@@ -1,0 +1,11 @@
+name = "Migrate from news"
+description = "Module to migrate my old site content to Drupal 7"
+package = "Migration"
+core = 7.x
+
+dependencies[] = migrate
+dependencies[] = taxonomy
+
+
+;  include the files that contain your Migrate classes
+files[] = news.inc

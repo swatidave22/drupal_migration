@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Set up for the news article.
+ */
+function migrate_news_install() {
+   migrate_news_link();
+   migrate_news_tags();
+
+}
+
+function migrate_news_tags() {
+  // Create a vocabulary named "Migrate category for news", enabled for the 'article' content type.
+  $description = st('Use tags to group news into categories.');
+  $help = st('Add list of news categouries.');
+  $vocabulary = (object) array(
+    'name' => 'Migrate category for news',
+    'description' => $description,
+    'machine_name' => 'migrate_news_category',
+    'help' => $help,
+
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  if (!field_info_field('migrate_news_category')) {
+    $field = array(
+      'field_name' => $vocabulary->machine_name,
+      'type' => 'taxonomy_term_reference',
+      // Set cardinality to unlimited for tagging.
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => $vocabulary->machine_name,
+            'vid' => $vocabulary->vid,
+            'parent' => 0,
+          ),
+        ),
+      ),
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('node', 'migrate_news_category', 'article')) {
+    $instance = array(
+      'field_name' => $vocabulary->machine_name,
+      'entity_type' => 'node',
+      'label' => $vocabulary->name,
+      'bundle' => 'article',
+      'description' => $vocabulary->help,
+      'widget' => array(
+        'type' => 'taxonomy_autocomplete',
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+
+  // Create a vocabulary named "Migrate category for news", enabled for the 'article' content type.
+  $description = st('Use tags to group news source.');
+  $help = st('Add list of news sources.');
+  $vocabulary = (object) array(
+    'name' => 'Migrate news source',
+    'description' => $description,
+    'machine_name' => 'migrate_news_source',
+    'help' => $help,
+
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  if (!field_info_field('migrate_news_source')) {
+    $field = array(
+      'field_name' => $vocabulary->machine_name,
+      'type' => 'taxonomy_term_reference',
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => $vocabulary->machine_name,
+            'vid' => $vocabulary->vid,
+            'parent' => 0,
+          ),
+        ),
+      ),
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('node', 'migrate_news_source', 'article')) {
+    $instance = array(
+      'field_name' => $vocabulary->machine_name,
+      'entity_type' => 'node',
+      'label' => $vocabulary->name,
+      'bundle' => 'article',
+      'description' => $vocabulary->help,
+      'widget' => array(
+        'type' => 'taxonomy_autocomplete',
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+// Create a text field named "Link", enabled for the 'Beer' content type.
+function migrate_news_link() {
+  if (!field_info_field('field_news_link')) {
+    $field = array(
+      'field_name' => 'field_news_link',
+      'type' => 'text',
+      'cardinality' => -1,
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('node', 'field_news_link', 'article')) {
+    $instance = array(
+      'field_name' => 'field_news_link',
+      'entity_type' => 'node',
+      'label' => 'Link',
+      'bundle' => 'article',
+      'description' => 'Beer country.',
+
+      'widget' => array(
+        'type' => 'text_textfield',
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
